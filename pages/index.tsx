@@ -3,7 +3,6 @@ import Image from "next/image"
 import Layout from "../layout/Layout"
 import Producto from "../components/Producto"
 import useQuiosco from "../hooks/useQuiosco"
-import { Key } from "react"
 
 export default function Home() {
   const { categoriaActual } = useQuiosco()
