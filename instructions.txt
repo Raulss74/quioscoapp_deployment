@@ -1,0 +1,156 @@
+
+----- &&& ----- Instalación de Proyecto con NEXT ----- &&& ------
+
+Craer un nuevo proyecto con next: 
+
+$ npx create-next-app@latest 
+✔ What is your project named? … [nombre del proyecto]
+✔ Would you like to use TypeScript? … No / Yes ---> No
+✔ Would you like to use ESLint? … No / Yes ---> No
+✔ Would you like to use Tailwind CSS? … No / Yes ---> No
+✔ Would you like to use `src/` directory? … No / Yes ---> No
+✔ Would you like to use App Router? (recommended) … No / Yes ---> No
+✔ Would you like to customize the default import alias (@/*)? … No / Yes ---> No
+Creating a new Next.js app in [Ruta del directorio]
+
+Luego, dirigirse a la carpeta del prooyecto y cargar el servidor de next:
+
+$ npm run dev
+
+
+----- &&& ----- Instalación de Tailwind: ----- &&& ------
+
+Dentro de la carpeta del proyecto: 
+
+$ npm i -D tailwindcss postcss autoprefixer
+
+Luego: 
+$ npx tailwindcss init -p
+
+Esto último creará los archivos: 
+Created Tailwind CSS config file: tailwind.config.js
+Created PostCSS config file: postcss.config.js
+
+Configurar tailwind.config, para que quede de la siguiente manera: 
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./pages/**/*.{js, ts, jsx, tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+Y dentro de la carpeta de stilos, tomar el archivo globals.css, eliminar su contenido y en su lugar colocar: 
+
+@tailwind base;
+@tailwind components; 
+@tailwind utilities;
+
+
+
+----- &&& ----- Instalación de PRISMA ----- &&& ------
+
+
+Primero crear la base de datos; en este caso, será de MySQL
+Para ello, estando en la terminal general del equipo: 
+
+$ mysql -u [usuario] -p
+$ insertar contraseña
+
+Luego: 
+$ crerate database [nombre de BD]
+
+Luego, retornar a la carpeta del proyecto e instalar prisma (en desarrollo y el producción). 
+Para la instalación de la dependencia de desarrollo de Prisma:
+$ npm i -D prisma
+Para la instalación de la dependencia de producción de Prisma:
+$ npm i @prisma/client
+
+Luego, para inicializar prisma: 
+$ npx prisma init
+
+Con esto último se crerá el archivo .env (hay que agregarlo al .gitignore), el cual contiene las variables de la conexión a la BD; y también crea la carpeta prisma con el archivo del schema de prisma. 
+
+Además, es recomendable instalar la extensión "Prisma" para mejor visualización de los archivos relacionados con este ORM
+
+Luego, configurar el .env para establecer la conexión a la base de datos: 
+
+DATABASE_URL="[gestor_base_de_datos]://[usuario]:[password]@localhost:[puerto]/[nombre_bd]"
+
+Para el caso del archivo schema.prisma, es donde se crea el modelo de los datos, por ejemplo:
+
+```
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Producto {
+  id Int @id @default(autoincrement())
+  nombre String
+  precio Float
+  imagen String  
+}
+
+model Categoria {
+  id Int @id @default(autoincrement())
+  nombre String
+  icono String
+}
+```
+
+Para crear las relaciones entre las entidades de la base de datos, la configuración se realiza dentro de la definición de los atributos de las entidades, por ejemplo: 
+
+model Producto {
+  id Int @id @default(autoincrement())
+  nombre String
+  precio Float
+  imagen String
+  categoria Categoria @relation( fields: [categoriaId], references: [id])
+  categoriaId Int
+}
+
+model Categoria {
+  id Int @id @default(autoincrement())
+  nombre String
+  icono String
+  productos Producto[]  
+}
+
+Luego hay que correr una migración desde la carpeta del proyecto:
+
+$ npx prisma migrate dev
+
+Lo anterior confirmará que la base de datos está sincronizada co el shcema de Prisma. 
+
+Una migración es como un control de versiones pero para bases de datos. 
+
+* Importante: cada vez que se realice alguna modificación en el schema.prisma, deberemos correr una migración con su nombre respectivo. Para observar la correcta sincronización, poemos apyarnos en herramientas como MySQL Workbrench.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
